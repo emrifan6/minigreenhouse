@@ -1,0 +1,171 @@
+  .judul{
+    text-align: center;
+    margin-top: 15px;
+  }
+
+  #linechart{
+    height: 100%;
+  }
+
+  
+  .tombol, .tombol-power{
+    display: flex;
+    justify-content: center;
+    margin-top: 0px;
+  }
+
+
+  .gauge_chart{
+    margin-top: 30px;
+    padding: 0px;
+  }
+
+ .soil1, .soil2, .soil3, .temperature, .humidity, .temperatureLuar, .humidityLuar, .soil, .sunshine{
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+  }
+
+  .soil1 .avg-soil1, .soil2 .avg-soil2, .soil3 .avg-soil3, .temperature .avg-temperature, .humidity .avg-humidity, .temperatureLuar .avg-temperatureLuar, .humidityLuar .avg-humidityLuar, .soil .avg-soil, .sunshine .avg-sunshine{
+    margin-left: -85px;
+    margin-top: 5px;
+  }
+
+  .soil1 .avg-soil1 ul, .soil2 .avg-soil2 ul, .soil3 .avg-soil3 ul, .temperature .avg-temperature ul, .humidity .avg-humidity ul, .temperatureLuar .avg-temperatureLuar ul, .humidityLuar .avg-humidityLuar ul, .soil .avg-soil ul, .sunshine .avg-sunshine ul{
+    margin-left: -30px;
+    list-style-type:none;
+    vertical-align: middle;
+    text-align: left;
+   /*border: 3px solid #543535;*/
+  }
+
+  .soil1 .avg-soil1 h5, .soil2 .avg-soil2 h5, .soil3 .avg-soil3 h5, .temperature .avg-temperature h5, .humidity .avg-humidity h5, .temperatureLuar .avg-temperatureLuar h5, .humidityLuar .avg-humidityLuar h5, .soil .avg-soil h5, .sunshine .avg-sunshine h5{
+    text-align: center;
+  }
+
+
+
+  .soil1-gauge, .soil2-gauge, .soil3-gauge, .temperature-gauge, .humidity-gauge, .temperatureLuar-gauge, .humidityLuar-gauge, .soil-gauge, .sunshine-gauge{
+    margin-top: 4px;
+    margin-left: -85px;
+  }
+
+
+.chart-power h4{
+text-transform: uppercase;
+text-align: center;
+  margin-bottom: 15px;
+}
+
+.chart, .chart-power{
+  margin-top:0px;
+  position: relative; 
+  height:40vh; 
+  width:100%;
+/*   border: 3px solid #543535; */
+}
+
+/*#linechart_power{
+  height: 500px !important;
+}*/
+
+.tombol-power{
+  margin-top:40px;
+}
+
+
+.tombol-power .btn, .tombol .btn{
+  margin-left: 5px;
+}
+
+  .control{
+    margin-top: 10px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: center;
+  }
+
+.control h5{
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.fan, .pump, .mist{
+  margin-left: 30px;
+  justify-content: center;
+}
+.control{
+/*   border: 3px solid #543535; */
+  padding: 5px;
+  margin-bottom: 40px;
+}
+
+.custom-control{
+/*   padding-right: : 5px; */
+/*   border: 3px solid #543535; */
+  left: 3px;
+  margin-top: -5px;
+}
+
+.lastdatain p{
+  color: #acacac;
+  font-size: 12px;
+  font-weight: 100;
+}
+
+.lastdatain{
+  margin-top: 30px;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  position: relative; 
+  text-align: right;
+  left: -2%;
+}
+
+
+
+/* DESKTOP VERSION */
+@media(min-width: 992px) {
+
+  .soil1, .soil2, .soil3{
+    margin-top :20px;
+}
+
+  
+.chart, .chart-power{
+  margin-top:0 px;
+  position: relative; 
+  height:75vh; 
+  width:100%;
+/*   border: 3px solid #543535; */
+}
+  
+ .tombol{
+    display: flex;
+    justify-content: center;
+    margin-top: 0px;
+  }
+
+  .control{
+    margin-top: 75px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .tombol-power{
+    display: flex;
+    justify-content: center;
+  margin-top:40px;
+  margin-bottom: 45px;
+}
+
+
+  .temperature, .humidity, .temperatureLuar, .humidityLuar, .soil, .sunshine{
+    display: flex;
+    justify-content: center;
+    margin: auto;
+    margin-top: 20px;
+  }
+
+
+}

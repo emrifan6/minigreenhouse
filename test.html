@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+
+  <!-- Chart JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js" integrity="sha256-R4pqcOYV8lt7snxMQO/HSbVCFRPMdrhAFMH+vr9giYI=" crossorigin="anonymous"></script>
+
+
+  <!-- UNTUK RADIAL CHART -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" language="JavaScript"></script>
+  <script src="https://pandameister.github.io/chartjs-chart-radial-gauge/docs/js/Chart.RadialGauge.umd.js" language="JavaScript"></script>
+  <script src="https://pandameister.github.io/chartjs-chart-radial-gauge/docs/samples/utils.js" language="JavaScript"></script>
+
+
+  <!-- JQUERY AJAX UNTUK RELOAD DIV SANGAT-SANGAT-->
+  <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+
+  <!-- MY font -->
+  <link href="https://fonts.googleapis.com/css?family=Viga&display=swap" rel="stylesheet">
+
+  <!-- My CSS -->
+  <link rel="stylesheet" type="text/css" href="style.css">
+
+
+
+
+  <title>MINI GREENHOUSE</title>
+</head>
+<body> 
+
+
+
+ <!-- GAUGE -->
+ <div class="container gauge">
+  <div class="row justify-content-center">
+    <div class="col-12">
+      <div class="row justify-content-center" >
+
+        <div class="col temperature" >
+          <div class="row">
+            <div class="col temperature-gauge">
+              <canvas id="chart-area-tem" class="chartjs-render-monitor"></canvas>
+            </div>
+            <div class="col avg-temperature">
+              <h5>Temperature</h5>
+              <ul class="ultemperature">
+                <li>Yesterday : --°C</li>
+                <li>Today Avg : --°C</li>
+                <li>Week Avg  : --°C</li>
+                <li>Month Avg  : --°C</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="col temperatureLuar">
+          <div class="row">
+            <div class="col temperatureLuar-gauge">
+              <canvas id="chart-area-tem-out" class="chartjs-render-monitor"></canvas>
+            </div>
+            <div class="col avg-temperatureLuar">
+              <h5>Temp. Luar</h5>
+              <ul class="ultemperatureout">
+                <li>Yesterday : --°C</li>
+                <li>Today Avg : --°C</li>
+                <li>Week Avg  : --°C</li>
+                <li>Month Avg  : --°C</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="col sunshine">
+          <div class="row">
+            <div class="col sunshine-gauge">
+              <canvas id="chart-area-sun" class="chartjs-render-monitor"></canvas>
+            </div>
+            <div class="col avg-sunshine">
+              <h5>Sunshine</h5>
+              <ul>
+                <li>Yesterday : --°C</li>
+                <li>Today Avg : --°C</li>
+                <li>Week Avg  : --°C</li>
+                <li>Month Avg  : --°C</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+
+      </div>
+
+      <div class="row justify-content-center">
+
+        <div class="col humidity">
+          <div class="row">
+            <div class="col humidity-gauge">
+             <canvas id="chart-area-hum" class="chartjs-render-monitor"></canvas>
+           </div>
+           <div class="col avg-humidity">
+            <h5>Humidity</h5>
+            <ul class="ulhumidity">
+              <li>Yesterday : --%</li>
+              <li>Today Avg : --%</li>
+              <li>Week Avg  : --%</li>
+              <li>Month Avg  : --%</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col humidityLuar">
+        <div class="row">
+          <div class="col humidityLuar-gauge">
+            <canvas id="chart-area-hum-out" class="chartjs-render-monitor"></canvas>
+          </div>
+          <div class="col avg-humidityLuar">
+            <h5>Hum. Luar</h5>
+            <ul class="ulhumidityout">
+              <li>Yesterday : --%</li>
+              <li>Today Avg : --%</li>
+              <li>Week Avg  : --%</li>
+              <li>Month Avg  : --%</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col soil">
+        <div class="row">
+          <div class="col soil-gauge">
+            <canvas id="chart-area-soil" class="chartjs-render-monitor"></canvas>
+          </div>
+          <div class="col avg-soil">
+            <h5>Soil</h5>
+            <ul>
+              <li>Yesterday : --°C</li>
+              <li>Today Avg : --°C</li>
+              <li>Week Avg  : --°C</li>
+              <li>Month Avg  : --°C</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>      
+</div>
+<!-- AKHIR GAUGE -->
+
+
+         
+
+
+<!-- AWAL TEMPERATURE RADIAL GAUGE -->
+
+<div id="update-radialtem-gauge">
+  <?php 
+  include "dbh.php";
+  ?>
+  <script type="text/javascript">
+    function datatem_gauge(){
+      <?php 
+      $sqlpush = "SELECT temperature FROM greenhouse  WHERE timestamp > date_sub(now(), interval 12 minute) ORDER BY id DESC LIMIT 1";
+      $pushdata = mysqli_query($conn, $sqlpush);
+      while($a = mysqli_fetch_array($pushdata)) { $llabel = $a['temperature'];}    
+      ?>
+      var tmp = <?php echo $llabel; ?>;         
+      return tmp;
+    };
+  </script>
+
+  <script type="text/javascript">
+            $( document ).ready(function() {
+                console.log( "ready!" );
+                console.log("***TEST***()");
+                console.log("datatem_gauge()");
+                var j = datatem_gauge();
+                console.log(j);
+            });
+           </script>
+</div>
+
+
+<script>
+  Chart.defaults.global.defaultFontFamily = 'Verdana';
+
+  var ctxtem = document.getElementById('chart-area-tem').getContext('2d');
+
+  var gradientStroke = ctxtem.createLinearGradient(500, 0, 100, 0);
+  gradientStroke.addColorStop(0, '#80b6f4');
+  gradientStroke.addColorStop(1, '#f49080');
+
+  var configtem = {
+    type: 'radialGauge',
+    data: {
+      labels: ['Temperature'],
+      datasets: [
+      {
+        data: [datatem_gauge()],
+                      backgroundColor: '#E91F63',    //gradiiennt stroke '[gradientStroke]' tidak dipakai
+                      borderWidth: 0,
+                      label: 'Score'
+                    }
+                    ]
+                  },
+                  options: {
+                    responsive: true,
+                    legend: {},
+                    title: {
+                    display: false,   // TRUE, UNTUK MENAMPILKAN TITLE CHART
+                    text: 'Radial gauge chart'
+                  },
+                  centerPercentage: 80,
+                  centerArea: {
+                    text: function(value, options) {
+                      return value + '°C';
+                    }
+                  }
+                }
+              };
+
+            </script>
+
+            <script type="text/javascript">
+              function radialtemupdate() {
+                configtem.data.datasets.forEach(function(dataset) {
+                  dataset.data = dataset.data.map(function() { 
+                    return datatem_gauge();
+                  });
+                });
+                window.myRadialGaugetem.update();
+              };
+
+              function load_datatem_radial(){
+                $("#update-radialtem-gauge").load("load-update-radialtem-gauge.php", {
+                         //   commentNewCount : commentCount
+                       });
+              };    
+
+              setInterval(function(){
+                load_datatem_radial(),
+                radialtemupdate()
+              }, 5000);
+            </script>
+
+            <!-- AKHIR TEMPERATURE RADIAL GAUGE -->
+
+
+
+            <!-- AWAL TEMPERATURE outside RADIAL GAUGE -->
+
+            <div id="update-radialtemout-gauge">
+              <?php 
+              include "dbh.php";
+              ?>
+              <script type="text/javascript">
+                function datatemout_gauge(){
+                  <?php 
+                  $sqlpush = "SELECT temperatureout FROM greenhouse  WHERE timestamp > date_sub(now(), interval 12 minute) ORDER BY id DESC LIMIT 1";
+                  $pushdata = mysqli_query($conn, $sqlpush);
+                  while($a = mysqli_fetch_array($pushdata)) { $llabel = $a['temperatureout'];}    
+                  ?>
+                  var tmp = <?php echo $llabel; ?>;
+                  return tmp;
+                };
+              </script>
+            </div>
+
+
+
+            <script>
+              Chart.defaults.global.defaultFontFamily = 'Verdana';
+
+              var ctxtemout = document.getElementById('chart-area-tem-out').getContext('2d');
+              
+              var gradientStroke = ctxtemout.createLinearGradient(500, 0, 100, 0);
+              gradientStroke.addColorStop(0, '#80b6f4');
+              gradientStroke.addColorStop(1, '#f49080');
+
+              var configtemout = {
+                type: 'radialGauge',
+                data: {
+                  labels: ['Temperature Outside'],
+                  datasets: [
+                  {
+                    data: [datatemout_gauge()],
+                      backgroundColor: '#99ABD5',    //gradiiennt stroke '[gradientStroke]' tidak dipakai
+                      borderWidth: 0,
+                      label: 'Score'
+                    }
+                    ]
+                  },
+                  options: {
+                    responsive: true,
+                    legend: {},
+                    title: {
+                    display: false,   // TRUE, UNTUK MENAMPILKAN TITLE CHART
+                    text: 'Radial gauge chart'
+                  },
+                  centerPercentage: 80,
+                  centerArea: {
+                    text: function(value, options) {
+                      return value + '°C';
+                    }
+                  }
+                }
+              };
+
+            </script>
+
+
+            <script type="text/javascript">
+              function radialtemoutupdate() {
+                configtemout.data.datasets.forEach(function(dataset) {
+                  dataset.data = dataset.data.map(function() { 
+                    return datatem_gauge();
+                  });
+                });
+                window.myRadialGaugetemout.update();
+              };
+
+              function load_datatemout_radial(){
+                $("#update-radialtemout-gauge").load("load-update-radialtemout-gauge.php", {
+                         //   commentNewCount : commentCount
+                       });
+              };    
+
+              setInterval(function(){
+                load_datatemout_radial(),
+                radialtemuoutpdate()
+              }, 5000);
+            </script>
+            <!-- AKHIR TEMPERATURE outside RADIAL GAUGE -->
+
+
+            <!-- AWAL SUNSHINE RADIAL GAUGE -->
+            <div id="update-radialsun-gauge">
+              <?php 
+              include "dbh.php";
+              ?>
+              <script type="text/javascript">
+                function datasun_gauge(){
+                  <?php 
+                  $sqlpush = "SELECT sunshine FROM greenhouse  WHERE timestamp > date_sub(now(), interval 12 minute) ORDER BY id DESC LIMIT 1";
+                  $pushdata = mysqli_query($conn, $sqlpush);
+                  while($a = mysqli_fetch_array($pushdata)) { $llabel = $a['sunshine'];}
+                  if (empty($llabel)) {
+                   $llabel = 1;
+                 }  
+                 ?>
+                             var tmp = 10;//<?php echo $llabel; ?>;
+                             return tmp;
+                           };
+                         </script>
+                       </div>
+
+
+                       <script>
+                        Chart.defaults.global.defaultFontFamily = 'Verdana';
+
+                        var ctxsun = document.getElementById('chart-area-sun').getContext('2d');
+
+                        var gradientStroke = ctxsun.createLinearGradient(500, 0, 100, 0);
+                        gradientStroke.addColorStop(0, '#80b6f4');
+                        gradientStroke.addColorStop(1, '#f49080');
+
+                        var configsun = {
+                          type: 'radialGauge',
+                          data: {
+                            labels: ['Sunshine'],
+                            datasets: [
+                            {
+                              data: [datasun_gauge()],
+                      backgroundColor: '#F0AD4E',    //gradiiennt stroke '[gradientStroke]' tidak dipakai
+                      borderWidth: 0,
+                      label: 'Score'
+                    }
+                    ]
+                  },
+                  options: {
+                    responsive: true,
+                    legend: {},
+                    title: {
+                    display: false,   // TRUE, UNTUK MENAMPILKAN TITLE CHART
+                    text: 'Radial gauge chart'
+                  },
+                  centerPercentage: 80,
+                  centerArea: {
+                    text: function(value, options) {
+                      return value + '%';
+                    }
+                  }
+                }
+              };
+
+            </script>
+
+            <script type="text/javascript">
+              function radialsunupdate() {
+                configsun.data.datasets.forEach(function(dataset) {
+                  dataset.data = dataset.data.map(function() { 
+                    return datasun_gauge();
+                  });
+                });
+                window.myRadialGaugesun.update();
+              };
+
+              function load_datasun_radial(){
+                $("#update-radialsun-gauge").load("load-update-radialsun-gauge.php", {
+                         //   commentNewCount : commentCount
+                       });
+              };    
+
+              setInterval(function(){
+                load_datasun_radial(),
+                radialsunupdate()
+              }, 5000);
+            </script>
+
+            <!-- AKHIR SUNSHINE RADIAL GAUGE --> 
+
+
+
+            <!-- AWAL HUMIDITY RAIDIAL GAUGE -->
+
+            <div id="update-radialhum-gauge">
+              <?php 
+              include "dbh.php";
+              ?>
+              <script type="text/javascript">
+                function datahum_gauge(){
+                  <?php 
+                  $sqlpush = "SELECT humidity FROM greenhouse WHERE timestamp > date_sub(now(), interval 12 minute) ORDER BY id DESC LIMIT 1";
+                  $pushdata = mysqli_query($conn, $sqlpush);
+                  while($a = mysqli_fetch_array($pushdata)) { $llabel = $a['humidity'];}    
+                  ?>
+                  var tmp = <?php echo $llabel; ?>;
+                  return tmp;
+                };
+              </script>
+            </div>
+
+
+
+            <script>
+              Chart.defaults.global.defaultFontFamily = 'Verdana';
+
+              var ctxhum = document.getElementById('chart-area-hum').getContext('2d');
+              
+              var gradientStroke = ctxhum.createLinearGradient(500, 0, 100, 0);
+              gradientStroke.addColorStop(0, '#80b6f4');
+              gradientStroke.addColorStop(1, '#f49080');
+
+              var confighum = {
+                type: 'radialGauge',
+                data: {
+                  labels: ['Humidity'],
+                  datasets: [
+                  {
+                    data: [datahum_gauge()],
+                      backgroundColor: '#01BCD6',    //gradiiennt stroke '[gradientStroke]' tidak dipakai
+                      borderWidth: 0,
+                      label: 'Score'
+                    }
+                    ]
+                  },
+                  options: {
+                    responsive: true,
+                    legend: {},
+                    title: {
+                    display: false,   // TRUE, UNTUK MENAMPILKAN TITLE CHART
+                    text: 'Radial gauge chart'
+                  },
+                  centerPercentage: 80,
+                  centerArea: {
+                    text: function(value, options) {
+                      return value + '%';
+                    }
+                  }
+                }
+              };
+
+            </script>
+
+
+            <script type="text/javascript">
+              function radialhumupdate() {
+                confighum.data.datasets.forEach(function(dataset) {
+                  dataset.data = dataset.data.map(function() { 
+                    return datahum_gauge();
+                  });
+                });
+                window.myRadialGaugehum.update();
+              };
+
+              function load_datahum_radial(){
+                $("#update-radialhum-gauge").load("load-update-radialhum-gauge.php", {
+                         //   commentNewCount : commentCount
+                       });
+              };    
+
+              setInterval(function(){
+                load_datahum_radial(),
+                radialhumupdate()
+              }, 5000);
+            </script>
+
+            <!-- AKHIR HUMIDITY RADIAL GAUGE -->
+
+
+
+            <!-- AWAL HUMIDITY  outside RAIDIAL GAUGE -->
+            <div id="update-radialhumout-gauge">
+              <?php 
+              include "dbh.php";
+              ?>
+              <script type="text/javascript">
+                function datahumout_gauge(){
+                  <?php 
+                  $sqlpush = "SELECT humidityout FROM greenhouse WHERE timestamp > date_sub(now(), interval 12 minute) ORDER BY id DESC LIMIT 1";
+                  $pushdata = mysqli_query($conn, $sqlpush);
+                  while($a = mysqli_fetch_array($pushdata)) { $llabel = $a['humidityout'];}    
+                  ?>
+                  var tmp = <?php echo $llabel; ?>;
+                  return tmp;
+                };
+              </script>
+            </div>
+
+
+            <script>
+              Chart.defaults.global.defaultFontFamily = 'Verdana';
+
+              var ctxhumout = document.getElementById('chart-area-hum-out').getContext('2d');
+              
+              var gradientStroke = ctxhumout.createLinearGradient(500, 0, 100, 0);
+              gradientStroke.addColorStop(0, '#80b6f4');
+              gradientStroke.addColorStop(1, '#f49080');
+
+              var confighumout = {
+                type: 'radialGauge',
+                data: {
+                  labels: ['Humidity Outside'],
+                  datasets: [
+                  {
+                    data: [datahumout_gauge()],
+                      backgroundColor: '#8EB021',    //gradiiennt stroke '[gradientStroke]' tidak dipakai
+                      borderWidth: 0,
+                      label: 'Score'
+                    }
+                    ]
+                  },
+                  options: {
+                    responsive: true,
+                    legend: {},
+                    title: {
+                    display: false,   // TRUE, UNTUK MENAMPILKAN TITLE CHART
+                    text: 'Radial gauge chart'
+                  },
+                  centerPercentage: 80,
+                  centerArea: {
+                    text: function(value, options) {
+                      return value + '%';
+                    }
+                  }
+                }
+              };
+
+            </script>
+            
+
+            <script type="text/javascript">
+              function radialhumuoutpdate() {
+                confighumout.data.datasets.forEach(function(dataset) {
+                  dataset.data = dataset.data.map(function() { 
+                    return datahumout_gauge();
+                  });
+                });
+                window.myRadialGaugehumout.update();
+              };
+
+              function load_datahum_radial(){
+                $("#update-radialhumout-gauge").load("load-update-radialhumout-gauge.php", {
+                         //   commentNewCount : commentCount
+                       });
+              };    
+
+              setInterval(function(){
+                load_datahumout_radial(),
+                radialhumoutupdate()
+              }, 5000);
+            </script>
+            <!-- AKHIR HUMIDITY outside RADIAL GAUGE -->
+
+
+            <!-- AWAL SOIL RAIDIAL GAUGE -->
+            <div id="update-radialsoil-gauge">
+              <?php 
+              include "dbh.php";
+              ?>
+              <script type="text/javascript">
+                function datasoil_gauge(){
+                  <?php 
+                  $sqlpush = "SELECT soil FROM greenhouse  WHERE timestamp > date_sub(now(), interval 12 minute) ORDER BY id DESC LIMIT 1";
+                  $pushdata = mysqli_query($conn, $sqlpush);
+                  while($a = mysqli_fetch_array($pushdata)) { $llabel = $a['soil'];}    
+                  ?>
+                  var tmp = <?php echo $llabel; ?>;
+                  return tmp;
+                };
+              </script>
+            </div>
+
+
+            <script>
+              Chart.defaults.global.defaultFontFamily = 'Verdana';
+
+              var ctxsoil = document.getElementById('chart-area-soil').getContext('2d');
+              
+              var gradientStroke = ctxsoil.createLinearGradient(500, 0, 100, 0);
+              gradientStroke.addColorStop(0, '#80b6f4');
+              gradientStroke.addColorStop(1, '#f49080');
+
+              var configsoil = {
+                type: 'radialGauge',
+                data: {
+                  labels: ['Soil'],
+                  datasets: [
+                  {
+                    data: [datasoil_gauge()],
+                      backgroundColor: '#795548',    //gradiiennt stroke '[gradientStroke]' tidak dipakai
+                      borderWidth: 0,
+                      label: 'Score'
+                    }
+                    ]
+                  },
+                  options: {
+                    responsive: true,
+                    legend: {},
+                    title: {
+                    display: false,   // TRUE, UNTUK MENAMPILKAN TITLE CHART
+                    text: 'Radial gauge chart'
+                  },
+                  centerPercentage: 80,
+                  centerArea: {
+                    text: function(value, options) {
+                      return value + '%';
+                    }
+                  }
+                }
+              };
+
+            </script>
+
+            <script type="text/javascript">
+              function radialsoilupdate() {
+                configsoil.data.datasets.forEach(function(dataset) {
+                  dataset.data = dataset.data.map(function() { 
+                    return datasoil_gauge();
+                  });
+                });
+                window.myRadialGaugesoil.update();
+              };
+
+              function load_datasoil_radial(){
+                $("#update-radialsoil-gauge").load("load-update-radialsoil-gauge.php", {
+                     //   commentNewCount : commentCount
+                   });
+              };    
+
+              setInterval(function(){
+                load_datasoil_radial(),
+                radialsoilupdate()
+              }, 5000);
+            </script>
+
+            <!-- AKHIR SOIL RAIDIAL GAUGE -->
+
+
+
+
+
+
+            <!-- Awal Load gauge chart -->
+            <script type="text/javascript">
+              window.onload = function() {
+               var ctxtem = document.getElementById('chart-area-tem').getContext('2d');
+               window.myRadialGaugetem = new Chart(ctxtem, configtem);
+               var ctxhum = document.getElementById('chart-area-hum').getContext('2d');
+               window.myRadialGaugehum = new Chart(ctxhum, confighum);
+               var ctxtemout = document.getElementById('chart-area-tem-out').getContext('2d');
+               window.myRadialGaugetemout = new Chart(ctxtemout, configtemout);
+               var ctxhumout = document.getElementById('chart-area-hum-out').getContext('2d');
+               window.myRadialGaugehumout = new Chart(ctxhumout, confighumout);
+               var ctxsoil = document.getElementById('chart-area-soil').getContext('2d');
+               window.myRadialGaugesoil = new Chart(ctxsoil, configsoil);
+               var ctxsun = document.getElementById('chart-area-sun').getContext('2d');
+               window.myRadialGaugesun = new Chart(ctxsun, configsun);
+             };
+           </script>
+           <!-- Akhir Load gauge chart -->
+
+  
+
+
+           <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+           <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+         </body>
+         </html>
+
